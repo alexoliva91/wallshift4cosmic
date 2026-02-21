@@ -27,37 +27,38 @@ mkdir -p ~/.config/wallpaper-schedule
 cp schedule.json ~/.config/wallpaper-schedule/
 ```
 
-Edit `~/.config/wallpaper-schedule/schedule.json` to set your desired time ranges and wallpaper paths.
+Edit `~/.config/wallpaper-schedule/schedule.json` to set your desired time ranges and wallpaper paths. Make sure to replace the placeholder `/path/to/*.jpg` values with absolute paths to your actual wallpaper files.
 
 ### 3. Install the systemd units
 
 ```bash
 mkdir -p ~/.config/systemd/user
 cp change-wallpaper.service \
-   change-wallpaper.timer \
    generate-wallpaper-timer.service \
    generate-wallpaper-timer.path \
    ~/.config/systemd/user/
 ```
 
+> **Note:** do not copy `change-wallpaper.timer` — it is generated from your schedule in the next step.
+
 ### 4. Generate the timer and enable everything
 
 ```bash
-bash ~/.local/bin/generate_timer.sh
 systemctl --user daemon-reload
+bash ~/.local/bin/generate_timer.sh
 systemctl --user enable --now change-wallpaper.timer
 systemctl --user enable --now generate-wallpaper-timer.path
 ```
 
-`generate_timer.sh` writes `~/.config/systemd/user/change-wallpaper.timer` with an `OnCalendar` entry for every `start` time in your schedule, then reloads the timer automatically.
+`generate_timer.sh` writes `~/.config/systemd/user/change-wallpaper.timer` with an `OnCalendar` entry for every `start` time in your schedule, then reloads and restarts the timer automatically.
+
+### 5. Apply the wallpaper immediately
+
+```bash
+bash ~/.local/bin/change_wallpaper.sh
+```
 
 ## Usage
-
-- **Apply the wallpaper immediately** for the current time:
-
-  ```bash
-  bash ~/.local/bin/change_wallpaper.sh
-  ```
 
 - **Update the schedule**: edit `~/.config/wallpaper-schedule/schedule.json` and save — the path watcher (`generate-wallpaper-timer.path`) will detect the change and regenerate the timer automatically.
 

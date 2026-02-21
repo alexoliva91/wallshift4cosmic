@@ -21,11 +21,28 @@ if [ -z "$STARTS" ]; then
     exit 1
 fi
 
-# OnCalendar lines
+# Validate and build OnCalendar lines
 ON_CALENDAR_LINES=""
 while IFS= read -r time; do
+    if ! [[ "$time" =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
+        echo "Invalid time format in schedule: '$time'" >&2
+        exit 1
+    fi
     ON_CALENDAR_LINES+="OnCalendar=*-*-* ${time}:00"$'\n'
 done <<< "$STARTS"
+
+# Warn if the schedule does not cover the full 24 hours
+COVERAGE=$(jq '
+  [.wallpapers[] |
+    (.start | split(":") | (.[0] | tonumber) * 60 + (.[1] | tonumber)) as $start |
+    (.end   | split(":") | (.[0] | tonumber) * 60 + (.[1] | tonumber)) as $end |
+    if $end > $start then $end - $start else 1440 - $start + $end end
+  ] | add
+' "$CONFIG")
+
+if [ "$COVERAGE" -ne 1440 ]; then
+    echo "Warning: schedule covers ${COVERAGE}/1440 minutes — some times have no matching entry and will fall back to the most recent one." >&2
+fi
 
 # write the timer file
 mkdir -p "$(dirname "$TIMER_FILE")"
