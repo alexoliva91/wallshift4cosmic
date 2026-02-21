@@ -16,8 +16,15 @@ The idea came from the script used by [variety](https://github.com/varietywalls/
 
 ```bash
 mkdir -p ~/.local/bin
-cp change_wallpaper.sh generate_timer.sh ~/.local/bin/
+cp scripts/change_wallpaper.sh scripts/generate_timer.sh ~/.local/bin/
 chmod +x ~/.local/bin/change_wallpaper.sh ~/.local/bin/generate_timer.sh
+```
+
+Or, if you prefer fish shell:
+
+```bash
+cp scripts/change_wallpaper.fish scripts/generate_timer.fish ~/.local/bin/
+chmod +x ~/.local/bin/change_wallpaper.fish ~/.local/bin/generate_timer.fish
 ```
 
 ### 2. Set up the schedule
@@ -33,13 +40,13 @@ Edit `~/.config/wallpaper-schedule/schedule.json` to set your desired time range
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp change-wallpaper.service \
-   generate-wallpaper-timer.service \
-   generate-wallpaper-timer.path \
+cp systemd/change-wallpaper.service \
+   systemd/generate-wallpaper-timer.service \
+   systemd/generate-wallpaper-timer.path \
    ~/.config/systemd/user/
 ```
 
-> **Note:** do not copy `change-wallpaper.timer` — it is generated from your schedule in the next step.
+> **Note:** do not copy `systemd/change-wallpaper.timer` — it is generated from your schedule in the next step. It is included in the repository for reference only.
 
 ### 4. Generate the timer and enable everything
 
