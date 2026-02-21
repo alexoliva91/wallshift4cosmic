@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/wallpaper-schedule/schedule.json"
+COSMIC_CONFIG="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
 
 if [ ! -f "$CONFIG" ]; then
     echo "Config file not found: $CONFIG" >&2
@@ -9,13 +10,6 @@ fi
 
 if ! command -v jq &>/dev/null; then
     echo "jq is required but not installed." >&2
-    exit 1
-fi
-
-COSMIC_CONFIG="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
-
-if [ ! -f "$COSMIC_CONFIG" ]; then
-    echo "COSMIC background config not found: $COSMIC_CONFIG" >&2
     exit 1
 fi
 
@@ -61,4 +55,5 @@ if ! grep -q 'source: Path(' "$COSMIC_CONFIG"; then
     exit 1
 fi
 
+ESCAPED=$(printf '%s\n' "$WALLPAPER" | sed 's/[&\\/]/\\&/g')
 sed --in-place "s|source: Path(\".*\")|source: Path(\"$ESCAPED\")|gm" ${COSMIC_CONFIG}
