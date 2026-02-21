@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch schedule.json and regenerate wallpaper timer on change
+
+[Path]
+PathModified=%h/.config/wallpaper-schedule/schedule.json
+
+[Install]
+WantedBy=default.target

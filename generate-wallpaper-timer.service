@@ -1,0 +1,6 @@
+[Unit]
+Description=Regenerate wallpaper timer from schedule.json
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/generate_timer.sh
