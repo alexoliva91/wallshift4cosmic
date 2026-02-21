@@ -44,8 +44,8 @@ cp change-wallpaper.service \
 ### 4. Generate the timer and enable everything
 
 ```bash
-systemctl --user daemon-reload
 bash ~/.local/bin/generate_timer.sh
+systemctl --user daemon-reload
 systemctl --user enable --now change-wallpaper.timer
 systemctl --user enable --now generate-wallpaper-timer.path
 ```
