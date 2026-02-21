@@ -61,5 +61,4 @@ if ! grep -q 'source: Path(' "$COSMIC_CONFIG"; then
     exit 1
 fi
 
-sed -r --in-place "s|source: Path(\".*\")|source: Path(\"$WALLPAPER\")|gm" \
-    "$COSMIC_CONFIG"
+sed --in-place "s|source: Path(\".*\")|source: Path(\"$ESCAPED\")|gm" ${COSMIC_CONFIG}
