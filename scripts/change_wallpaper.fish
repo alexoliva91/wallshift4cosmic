@@ -1,10 +1,15 @@
 #!/usr/bin/env fish
 
 set CONFIG (test -n "$XDG_CONFIG_HOME" && echo "$XDG_CONFIG_HOME" || echo "$HOME/.config")/wallpaper-schedule/schedule.json
-set COSMIC_CONFIG "$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
+# COSMIC >= 1.11 keeps one background config per theme (.Light/.Dark); older
+# releases use the plain one. Update every one that exists.
+set COSMIC_CONFIGS
+for f in $HOME/.config/cosmic/com.system76.CosmicBackground{,.Light,.Dark}/v1/all
+    test -f $f; and set -a COSMIC_CONFIGS $f
+end
 
 echo $CONFIG
-echo $COSMIC_CONFIG
+echo $COSMIC_CONFIGS
 
 if not test -f "$CONFIG"
     echo "Config file not found: $CONFIG" >&2
@@ -54,10 +59,11 @@ if test -z "$WALLPAPER"
     exit 1
 end
 
-if not grep -q 'source: Path(' "$COSMIC_CONFIG"
-    echo "Unexpected format in COSMIC config — pattern 'source: Path(...)' not found." >&2
-    exit 1
-end
-
 echo $WALLPAPER
-sed -i "s|source: Path(\".*\")|source: Path(\"$WALLPAPER\")|" $COSMIC_CONFIG
+for COSMIC_CONFIG in $COSMIC_CONFIGS
+    if not grep -q 'source: Path(' $COSMIC_CONFIG
+        echo "Unexpected format in $COSMIC_CONFIG — pattern 'source: Path(...)' not found." >&2
+        continue
+    end
+    sed -i "s|source: Path(\".*\")|source: Path(\"$WALLPAPER\")|" $COSMIC_CONFIG
+end

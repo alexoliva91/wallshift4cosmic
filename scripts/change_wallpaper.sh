@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/wallpaper-schedule/schedule.json"
-COSMIC_CONFIG="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
+# COSMIC >= 1.11 keeps one background config per theme (.Light/.Dark); older
+# releases use the plain one. Update every one that exists.
+COSMIC_CONFIGS=()
+for f in "$HOME"/.config/cosmic/com.system76.CosmicBackground{,.Light,.Dark}/v1/all; do
+    [ -f "$f" ] && COSMIC_CONFIGS+=("$f")
+done
 
 if [ ! -f "$CONFIG" ]; then
     echo "Config file not found: $CONFIG" >&2
@@ -50,10 +55,11 @@ if [ -z "$WALLPAPER" ]; then
     exit 1
 fi
 
-if ! grep -q 'source: Path(' "$COSMIC_CONFIG"; then
-    echo "Unexpected format in COSMIC config — pattern 'source: Path(...)' not found." >&2
-    exit 1
-fi
-
 ESCAPED=$(printf '%s\n' "$WALLPAPER" | sed 's/[&\\/]/\\&/g')
-sed --in-place "s|source: Path(\".*\")|source: Path(\"$ESCAPED\")|gm" ${COSMIC_CONFIG}
+for COSMIC_CONFIG in "${COSMIC_CONFIGS[@]}"; do
+    if ! grep -q 'source: Path(' "$COSMIC_CONFIG"; then
+        echo "Unexpected format in $COSMIC_CONFIG — pattern 'source: Path(...)' not found." >&2
+        continue
+    fi
+    sed --in-place "s|source: Path(\".*\")|source: Path(\"$ESCAPED\")|gm" "$COSMIC_CONFIG"
+done
