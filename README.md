@@ -1,7 +1,13 @@
 # wallshift4cosmic
 A simple script for automatically change wallpaper on COSMIC-DE based on time of day.
  
-It reads the `schedule.json` file to determine the time intervals and corresponding wallpapers, and then sets the wallpaper accordingly by changing the `~/.config/cosmic/com.system76.CosmicBackground/v1/all` file.
+It reads the `schedule.json` file to determine the time intervals and corresponding wallpapers, and then sets the wallpaper accordingly by changing the COSMIC background config files. Every one of these that exists is updated:
+
+- `~/.config/cosmic/com.system76.CosmicBackground.Light/v1/all` (COSMIC 1.11 and later, light theme)
+- `~/.config/cosmic/com.system76.CosmicBackground.Dark/v1/all` (COSMIC 1.11 and later, dark theme)
+- `~/.config/cosmic/com.system76.CosmicBackground/v1/all` (COSMIC before 1.11)
+
+> **Note:** after upgrading to COSMIC 1.11, log out and back in so the new `cosmic-bg` daemon is running. Until then the old daemon keeps reading the pre-1.11 file and ignores wallpaper changes made from COSMIC Settings.
 
 The idea came from the script used by [variety](https://github.com/varietywalls/variety) wallpaper changer. 
 
